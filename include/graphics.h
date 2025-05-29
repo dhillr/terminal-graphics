@@ -22,6 +22,9 @@ typedef struct {
     Pixel* pixels;
 } Display;
 
+/*
+    Creates a `Pixel` with the specified `r` `g` and `b`.
+*/
 Pixel pixel(char r, char g, char b) {
     Pixel p = {0};
     p.r = r;
@@ -30,6 +33,9 @@ Pixel pixel(char r, char g, char b) {
     return p;
 }
 
+/*
+    Creates a display with the specified `width` and `height`.
+*/
 Display create_display(int width, int height) {
     Display d = {0};
     d.width = width;
@@ -38,6 +44,10 @@ Display create_display(int width, int height) {
     return d;
 }
 
+/*
+    Resize `display` to the terminal size.
+    Can result in a segmentation fault.
+*/
 void resize(Display* display) {
     struct winsize size;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
@@ -55,6 +65,9 @@ void resize(Display* display) {
     }
 }
 
+/*
+    Waits 1 / `FPS` seconds.
+*/
 void tick(float FPS) {
     usleep(1000000 / FPS);
 }
@@ -74,6 +87,9 @@ vec3 create_vec3(float x, float y, float z) {
     return v;
 }
 
+/*
+    Sets a pixel in the specified `display` to `pixel`.
+*/
 int set_pixel(Display display, int x, int y, Pixel val) {
     if (x >= display.width || x < 0 || y >= display.width || y < 0) 
         return 1;
@@ -81,11 +97,18 @@ int set_pixel(Display display, int x, int y, Pixel val) {
     return 0;
 }
 
+/*
+    Frees all the pixel memory in the display.
+    Also works as an exit code.
+*/
 int terminate(Display* display) {
     free(display->pixels);
     return 0;
 }
 
+/*
+    Sets a line in the specified `display` to `pixel`.
+*/
 void set_line(Display display, int x1, int y1, int x2, int y2, Pixel pixel) {
     int dx = abs(x2 - x1);
     int dy = -abs(y2 - y1);
@@ -112,6 +135,9 @@ void set_line(Display display, int x1, int y1, int x2, int y2, Pixel pixel) {
     }
 }
 
+/*
+    Sets a rectangle in the specified `display` to `pixel`.
+*/
 void set_rect(Display display, int x, int y, int width, int height, Pixel pixel) {
     for (int j = y; j < y + height; j++) {
         for (int i = x; i < x + width; i++) {
@@ -120,6 +146,9 @@ void set_rect(Display display, int x, int y, int width, int height, Pixel pixel)
     }
 }
 
+/*
+    Draws `display` into the terminal.
+*/
 void render(Display display) {
     system("clear");
     for (int j = 0; j < display.height; j += 2) {
