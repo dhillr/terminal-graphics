@@ -13,6 +13,7 @@ int main() {
 
         set_line(display, 0, 0, 20, frames, pixel(0, 0, 0));
         set_rect(display, 20, 30, frames, 5, pixel(0, 0, 0));
+        set_triangle(display, 20, 49, 25, 40, 30 + frames, 49, pixel(0, 0, 0));
 
         // resize(&display);
         render(display);

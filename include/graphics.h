@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/ioctl.h>
 
 #define pixel_alloc(width, height) (Pixel*)malloc(width*height*sizeof(Pixel))
+#define dot(a, b) a.x * b.x + a.y * b.y
+#define perpendicular(v) (vec2){v.y, -v.x}
+#define max(a, b) a>b?a:b
+#define min(a, b) a<b?a:b
 
 typedef struct {
     float x, y;
@@ -90,10 +95,10 @@ vec3 create_vec3(float x, float y, float z) {
 /*
     Sets a pixel in the specified `display` to `pixel`.
 */
-int set_pixel(Display display, int x, int y, Pixel val) {
+int set_pixel(Display display, int x, int y, Pixel pixel) {
     if (x >= display.width || x < 0 || y >= display.width || y < 0) 
         return 1;
-    display.pixels[x+y*display.width] = val;
+    display.pixels[x+y*display.width] = pixel;
     return 0;
 }
 
@@ -131,6 +136,32 @@ void set_line(Display display, int x1, int y1, int x2, int y2, Pixel pixel) {
             if (y1 == y2) break;
             error += dx;
             y1 += dir_y;
+        }
+    }
+}
+
+/*
+    Sets a triangle in the specified `display` to `pixel`.
+*/
+void set_triangle(Display display, int x1, int y1, int x2, int y2, int x3, int y3, Pixel pixel) {
+    int min_x = min(min(x1, x2), x3);
+    int min_y = min(min(y1, y2), y3);
+    int max_x = max(max(x1, x2), x3);
+    int max_y = max(max(y1, y2), y3);
+
+    vec2 ABperp = perpendicular(create_vec2(x2 - x1, y2 - y1));
+    vec2 BCperp = perpendicular(create_vec2(x3 - x2, y3 - y2));
+    vec2 CAperp = perpendicular(create_vec2(x1 - x2, y1 - y3));
+
+    for (int j = min_y; j < max_y; j++) {
+        for (int i = min_x; i < max_x; i++) {
+            vec2 PA = create_vec2(i - x1, j - y1);
+            vec2 PB = create_vec2(i - x2, j - y2);
+            vec2 PC = create_vec2(i - x3, j - y3);
+
+            if (dot(ABperp, PA) < 0 && dot(BCperp, PB) < 0 && dot(CAperp, PC) < 0) {
+                set_pixel(display, i, j, pixel);
+            }
         }
     }
 }
