@@ -151,15 +151,15 @@ void set_triangle(Display display, int x1, int y1, int x2, int y2, int x3, int y
 
     vec2 ABperp = perpendicular(create_vec2(x2 - x1, y2 - y1));
     vec2 BCperp = perpendicular(create_vec2(x3 - x2, y3 - y2));
-    vec2 CAperp = perpendicular(create_vec2(x1 - x2, y1 - y3));
+    vec2 CAperp = perpendicular(create_vec2(x1 - x3, y1 - y3));
 
-    for (int j = min_y; j < max_y; j++) {
-        for (int i = min_x; i < max_x; i++) {
+    for (int j = min_y; j <= max_y; j++) {
+        for (int i = min_x; i <= max_x; i++) {
             vec2 PA = create_vec2(i - x1, j - y1);
             vec2 PB = create_vec2(i - x2, j - y2);
             vec2 PC = create_vec2(i - x3, j - y3);
 
-            if (dot(ABperp, PA) < 0 && dot(BCperp, PB) < 0 && dot(CAperp, PC) < 0) {
+            if (dot(ABperp, PA) <= 0 && dot(BCperp, PB) <= 0 && dot(CAperp, PC) <= 0) {
                 set_pixel(display, i, j, pixel);
             }
         }

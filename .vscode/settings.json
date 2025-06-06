@@ -2,6 +2,7 @@
     "files.associations": {
         "math.h": "c",
         "termios.h": "c",
-        "graphics.h": "c"
+        "graphics.h": "c",
+        "functional": "c"
     }
 }
