@@ -96,7 +96,7 @@ vec3 create_vec3(float x, float y, float z) {
     Sets a pixel in the specified `display` to `pixel`.
 */
 int set_pixel(Display display, int x, int y, Pixel pixel) {
-    if (x >= display.width || x < 0 || y >= display.width || y < 0) 
+    if (x >= display.width || x < 0 || y >= display.height || y < 0) 
         return 1;
     display.pixels[x+y*display.width] = pixel;
     return 0;
@@ -159,7 +159,10 @@ void set_triangle(Display display, int x1, int y1, int x2, int y2, int x3, int y
             vec2 PB = create_vec2(i - x2, j - y2);
             vec2 PC = create_vec2(i - x3, j - y3);
 
-            if (dot(ABperp, PA) <= 0 && dot(BCperp, PB) <= 0 && dot(CAperp, PC) <= 0) {
+            int d1 = dot(ABperp, PA) >= 0;
+            int d2 = dot(BCperp, PB) >= 0;
+            int d3 = dot(CAperp, PC) >= 0;
+            if ((d1 && d2 && d3) || (!d1 && !d2 && !d3)) {
                 set_pixel(display, i, j, pixel);
             }
         }

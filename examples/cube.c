@@ -16,6 +16,7 @@ vec2 rotateZ(float x, float y, float theta) {
 }
 
 vec2 project(vec3 pos) {
+    if (pos.z <= 0.1f) pos.z = 0.1f;
     return create_vec2(pos.x * (focal_length / pos.z), pos.y * (focal_length / pos.z));
 }
 
@@ -46,11 +47,13 @@ int main() {
         create_vec3(-10, 10, -10)
     };
 
-    size_t indices[12] = {
-        0, 1, 2,
-        0, 2, 3,
-        4, 5, 6,
-        4, 6, 7
+    size_t indices[36] = {
+        0, 1, 2,  0, 2, 3,
+        4, 5, 6,  4, 6, 7,
+        0, 3, 7,  0, 7, 4,
+        1, 5, 6,  1, 6, 2,
+        3, 2, 6,  3, 6, 7,
+        0, 1, 5,  0, 5, 4
     };
 
     for (int frames = 0; ; frames++) {
@@ -60,16 +63,17 @@ int main() {
             }
         }
 
-        for (int i = 0; i < 12; i += 3) {
+        for (int i = 0; i < 36; i += 3) {
             vec2 p[3] = {
                 projectRotate(points[indices[i]], 0.04*frames, 0.04*frames, 0),
                 projectRotate(points[indices[i+1]], 0.04*frames, 0.04*frames, 0),
                 projectRotate(points[indices[i+2]], 0.04*frames, 0.04*frames, 0)
             };
-            set_triangle(display, 
-                (int)(p[0].x+0.5*display.width), (int)(p[0].y+0.5*display.height),
-                (int)(p[1].x+0.5*display.width), (int)(p[1].y+0.5*display.height),
-                (int)(p[2].x+0.5*display.width), (int)(p[2].y+0.5*display.height),
+            
+            set_triangle(display,
+                (int)(p[0].x+display.width/2), (int)(p[0].y+display.height/2),
+                (int)(p[1].x+display.width/2), (int)(p[1].y+display.height/2),
+                (int)(p[2].x+display.width/2), (int)(p[2].y+display.height/2),
                 pixel(255, 255, 255));
         }
 
