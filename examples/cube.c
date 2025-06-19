@@ -57,11 +57,7 @@ int main() {
     };
 
     for (int frames = 0; ; frames++) {
-        for (int j = 0; j < display.height; j++) {
-            for (int i = 0; i < display.width; i++) {
-                set_pixel(display, i, j, pixel(0, 0, 0));
-            }
-        }
+        clear(&display, 0);
 
         for (int i = 0; i < 36; i += 3) {
             vec2 p[3] = {

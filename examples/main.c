@@ -17,7 +17,6 @@ int main() {
 
         // resize(&display);
         render(display);
-        
         tick(20);
     }
 

@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <limits.h>
 #include <sys/ioctl.h>
 
 #define pixel_alloc(width, height) (Pixel*)malloc(width*height*sizeof(Pixel))
-#define dot(a, b) a.x * b.x + a.y * b.y
+#define dot(a, b) a.x*b.x+a.y*b.y
 #define perpendicular(v) (vec2){v.y, -v.x}
 #define max(a, b) a>b?a:b
 #define min(a, b) a<b?a:b
@@ -31,10 +32,7 @@ typedef struct {
     Creates a `Pixel` with the specified `r` `g` and `b`.
 */
 Pixel pixel(char r, char g, char b) {
-    Pixel p = {0};
-    p.r = r;
-    p.g = g;
-    p.b = b;
+    Pixel p = {.r=r, .g=g, .b=b};
     return p;
 }
 
@@ -77,6 +75,10 @@ void tick(float FPS) {
     usleep(1000000 / FPS);
 }
 
+unsigned int rgb(Pixel pixel) {
+    return (pixel.r << 16) | (pixel.g << 8) | pixel.b;
+}
+
 vec2 create_vec2(float x, float y) {
     vec2 v = {0};
     v.x = x;
@@ -93,21 +95,29 @@ vec3 create_vec3(float x, float y, float z) {
 }
 
 /*
-    Sets a pixel in the specified `display` to `pixel`.
-*/
-int set_pixel(Display display, int x, int y, Pixel pixel) {
-    if (x >= display.width || x < 0 || y >= display.height || y < 0) 
-        return 1;
-    display.pixels[x+y*display.width] = pixel;
-    return 0;
-}
-
-/*
     Frees all the pixel memory in the display.
     Also works as an exit code.
 */
 int terminate(Display* display) {
     free(display->pixels);
+    return 0;
+}
+
+/*
+    Clears `display` with grayscale value `v`.
+*/
+void clear(Display* display, char v) {
+    memset(display->pixels, v, display->width*display->height*sizeof(Pixel));
+}
+
+/*
+    Sets a pixel in the specified `display` to `pixel`.
+    Also works as an exit code.
+*/
+int set_pixel(Display display, int x, int y, Pixel pixel) {
+    if (x >= display.width || x < 0 || y >= display.height || y < 0) 
+        return 1;
+    display.pixels[x+y*display.width] = pixel;
     return 0;
 }
 
